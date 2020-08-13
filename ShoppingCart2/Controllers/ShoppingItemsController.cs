@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,16 +12,17 @@ using ShoppingCart2.Models;
 
 namespace ShoppingCart2.Controllers
 {
-
+    // this handles users who are l=not logged in and directs them to the login page
+    [Authorize]
 
     public class ShoppingItemsController : Controller
     {
 
-        //this is dependancy injection
+        //this is a dependancy injection pattern
 
         private readonly ApplicationDbContext _context;
 
-        // this is added to the dependancy injection so we can get the user see 21min pt on Cart_intro_p9
+        // this is added to the dependancy injection so we can get the user see 21min pt on Shopping Cart_intro_p9
         private readonly UserManager<ApplicationUser> _userManager;
 
         public ShoppingItemsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
@@ -34,10 +36,18 @@ namespace ShoppingCart2.Controllers
 
 
         // GET: ShoppingItemsController
-        public ActionResult Index()
+
+        public async Task <ActionResult> Index()
         {
-            var items = _context.ShoppingItem.Include(si => si.ApplicationUser);
-            return View();
+            // this is filtering the items so we only see the items that belong to the signed in user
+            // 38 minute point - goes over why we need to use await for items 
+            
+            var user = await GetCurrentUserAsync();
+            var items = await _context.ShoppingItem
+                .Where(si => si.ApplicationUserId == user.Id)
+                .ToListAsync();
+           
+            return View(items);
         }
 
         // GET: ShoppingItemsController/Details/5
@@ -59,7 +69,9 @@ namespace ShoppingCart2.Controllers
         {
             try
             {
-                // userManager here to be able to get the user - see user app at bottom below
+                // userManager here to be able to get the user - see one line private helper method 
+                // user app at bottom below
+
                 var user = await GetCurrentUserAsync();
                 shoppingItem.ApplicationUserId = user.Id;
 
@@ -116,6 +128,7 @@ namespace ShoppingCart2.Controllers
             }
         }
 
+        //this is a one line private helper method - gets the entire user object of the person making the request 
         private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
     }
 }
