@@ -12,7 +12,7 @@ using ShoppingCart2.Models;
 
 namespace ShoppingCart2.Controllers
 {
-    // this handles users who are l=not logged in and directs them to the login page
+    // this handles users who are not logged in and directs them to the login page
     [Authorize]
 
     public class ShoppingItemsController : Controller
@@ -37,16 +37,16 @@ namespace ShoppingCart2.Controllers
 
         // GET: ShoppingItemsController
 
-        public async Task <ActionResult> Index()
+        public async Task<ActionResult> Index()
         {
             // this is filtering the items so we only see the items that belong to the signed in user
             // 38 minute point - goes over why we need to use await for items 
-            
+
             var user = await GetCurrentUserAsync();
             var items = await _context.ShoppingItem
                 .Where(si => si.ApplicationUserId == user.Id)
                 .ToListAsync();
-           
+
             return View(items);
         }
 
@@ -87,18 +87,36 @@ namespace ShoppingCart2.Controllers
         }
 
         // GET: ShoppingItemsController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            return View();
+            var item = await _context.ShoppingItem.FirstOrDefaultAsync(si => si.Id == id);
+            var loggedInUser = await GetCurrentUserAsync();
+
+            if (item.ApplicationUserId != loggedInUser.Id)
+            {
+                return NotFound();
+            }
+
+            return View(item);
         }
 
         // POST: ShoppingItemsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Edit(int id, ShoppingItem shoppingItem)
         {
+
             try
             {
+
+                // video Cart_Intro_p9 at 1hr 15 min   Adam explains why he puts in this code to ALWAYS get the current
+                // user and set that again - better to trust the cookie that holds the user id info than form field values
+                var user = await GetCurrentUserAsync();
+                shoppingItem.ApplicationUserId = user.Id;
+
+                _context.ShoppingItem.Update(shoppingItem);
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
             catch
