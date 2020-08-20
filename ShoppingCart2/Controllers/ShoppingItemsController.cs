@@ -126,24 +126,33 @@ namespace ShoppingCart2.Controllers
         }
 
         // GET: ShoppingItemsController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int? id)
         {
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var shoppingItem = await _context.ShoppingItem
+                //.Include(si => si.ProductName)
+                .FirstOrDefaultAsync(si => si.Id == id);
+            if (shoppingItem == null)
+            {
+                return NotFound();
+            }
+
+            return View(shoppingItem);
         }
 
         // POST: ShoppingItemsController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            var shoppingItem = await _context.ShoppingItem.FindAsync(id);
+            _context.ShoppingItem.Remove(shoppingItem);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         //this is a one line private helper method - gets the entire user object of the person making the request 
