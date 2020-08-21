@@ -51,9 +51,10 @@ namespace ShoppingCart2.Controllers
         }
 
         // GET: ShoppingItemsController/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            return View();
+            var item = await _context.ShoppingItem.FirstOrDefaultAsync(si => si.Id == id);
+            return View(item);
         }
 
         // GET: ShoppingItemsController/Create
@@ -147,7 +148,8 @@ namespace ShoppingCart2.Controllers
         // POST: ShoppingItemsController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+            public async Task<IActionResult> Delete(int id)
         {
             var shoppingItem = await _context.ShoppingItem.FindAsync(id);
             _context.ShoppingItem.Remove(shoppingItem);

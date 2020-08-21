@@ -424,3 +424,4 @@ C:\Users\Owner\Source\Repos\ShoppingCart2\ShoppingCart2\obj\Debug\netcoreapp3.1\
 C:\Users\Owner\Source\Repos\ShoppingCart2\ShoppingCart2\obj\Debug\netcoreapp3.1\Razor\Views\ShoppingItems\Index.cshtml.g.cs
 C:\Users\Owner\Source\Repos\ShoppingCart2\ShoppingCart2\obj\Debug\netcoreapp3.1\Razor\Views\ShoppingItems\Edit.cshtml.g.cs
 C:\Users\Owner\Source\Repos\ShoppingCart2\ShoppingCart2\obj\Debug\netcoreapp3.1\Razor\Views\ShoppingItems\Delete.cshtml.g.cs
+C:\Users\Owner\Source\Repos\ShoppingCart2\ShoppingCart2\obj\Debug\netcoreapp3.1\Razor\Views\ShoppingItems\Details.cshtml.g.cs
